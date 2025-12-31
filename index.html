@@ -98,19 +98,26 @@
 
     result.innerText = "✨ AI is thinking...";
 
-    // TEMP DEMO RESPONSE (real AI comes next)
-    setTimeout(() => {
-      result.innerText =
-`TITLE: Shadows of the City
+    try {
+  const response = await fetch("/.netlify/functions/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ prompt })
+  });
 
-SCENE 1:
-Rain falls over empty streets. A lone figure walks under flickering lights.
+  const data = await response.json();
 
-SCENE 2:
-A mysterious voice echoes. The city hides secrets tonight...`;
-    }, 1500);
+  if (data.result) {
+    result.innerText = data.result;
+  } else {
+    result.innerText = "✨ AI is thinking...";
+  }
+} catch (error) {
+  result.innerText = "Error connecting to AI.";
+    }
   }
 </script>
-
 </body>
 </html>
