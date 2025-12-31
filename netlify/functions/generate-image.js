@@ -9,33 +9,36 @@ export async function handler(event) {
       };
     }
 
-    const response = await fetch("https://api.openai.com/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-image-1",
-        prompt: prompt,
-        size: "1024x1024"
-      })
-    });
+    const response = await fetch(
+      "https://api.openai.com/v1/images/generations",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-image-1",
+          prompt: prompt,
+          size: "1024x1024"
+        })
+      }
+    );
 
     const data = await response.json();
 
-    if (!data.data || !data.data[0].b64_json) {
+    if (!data.data || !data.data[0].url) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "No image returned" })
+        body: JSON.stringify({ error: "Image not generated", raw: data })
       };
     }
 
-    const imageBase64 = `data:image/png;base64,${data.data[0].b64_json}`;
-
     return {
       statusCode: 200,
-      body: JSON.stringify({ image: imageBase64 })
+      body: JSON.stringify({
+        image: data.data[0].url
+      })
     };
 
   } catch (error) {
