@@ -2,156 +2,181 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AIYPeTools – AI Creative Studio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIYPeTools – AI Creative Studio</title>
 
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #0f0f14;
-      color: #fff;
+      background: #0f172a;
+      color: #ffffff;
     }
 
     header {
+      background: linear-gradient(90deg, #6d28d9, #2563eb);
       padding: 20px;
       text-align: center;
-      background: linear-gradient(90deg, #6a11cb, #2575fc);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin-top: 6px;
+      opacity: 0.9;
     }
 
     section {
-      padding: 40px;
-      max-width: 900px;
-      margin: auto;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #020617;
+      border-radius: 12px;
     }
 
     textarea {
       width: 100%;
-      height: 120px;
-      padding: 10px;
+      min-height: 120px;
+      padding: 12px;
       border-radius: 8px;
       border: none;
-      margin-top: 10px;
+      font-size: 15px;
+      resize: vertical;
+    }
+
+    .buttons {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     button {
-      margin-top: 15px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #2575fc;
+      background: #2563eb;
       color: white;
-      font-size: 16px;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
       cursor: pointer;
     }
 
     button:hover {
-      background: #1b5fd9;
+      background: #1d4ed8;
     }
 
     .output {
       margin-top: 20px;
-      background: #1c1c28;
-      padding: 20px;
-      border-radius: 8px;
-      white-space: pre-wrap;
+      padding: 14px;
+      background: #020617;
+      border-radius: 12px;
+      overflow: visible;
+    }
+
+    .output img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      margin-top: 10px;
     }
 
     footer {
       text-align: center;
       padding: 20px;
       opacity: 0.6;
+      font-size: 14px;
     }
   </style>
 </head>
 
 <body>
 
-<header>
-  <h1>🎬 AIYPeTools</h1>
-  <p>All-in-one AI Studio for Scripts, Videos & Movies</p>
-</header>
+  <header>
+    <h1>🎬 AIYPeTools</h1>
+    <p>All-in-one AI Studio for Scripts, Images & Movies</p>
+  </header>
 
-<section>
-  <h2>✍️ AI Script Generator</h2>
-  <p>Describe your video or movie idea</p>
+  <section>
+    <h2>✍️ AI Script & Image Generator</h2>
+    <p>Describe your video, movie, or image idea</p>
 
-  <textarea id="prompt" placeholder="Example: A suspense short film in a rainy city..."></textarea>
-  <button onclick="generateScript()">Generate Script</button>
-  <button onclick="generateImage()">🎨 Generate Image</button>
-  <div id="result" class="output"></div>
-</section>
+    <textarea
+      id="prompt"
+      placeholder="Example: cinematic rainy cyberpunk city at night, neon lights, ultra realistic">
+    </textarea>
 
-<footer>
-  © 2025 AIYPeTools • Built with ❤️
-</footer>
+    <div class="buttons">
+      <button onclick="generateScript()">Generate Script</button>
+      <button onclick="generateImage()">🎨 Generate Image</button>
+    </div>
 
-<script>
-  async function generateImage() {
-  const prompt = document.getElementById("prompt").value;
-  const result = document.getElementById("result");
+    <div id="result" class="output"></div>
+  </section>
 
-  if (!prompt) {
-    result.innerText = "Please enter an idea first.";
-    return;
-  }
+  <footer>
+    © 2025 AIYPeTools • Built with ❤️
+  </footer>
 
-  result.innerHTML = "🎨 Generating image...";
+  <script>
+    async function generateScript() {
+      const prompt = document.getElementById("prompt").value;
+      const result = document.getElementById("result");
 
-  try {
-    const response = await fetch("/.netlify/functions/generate-image", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ prompt })
-    });
+      if (!prompt) {
+        result.innerText = "Please enter an idea first.";
+        return;
+      }
 
-    const data = await response.json();
+      result.innerText = "✨ AI is thinking...";
 
-    if (data.image) {
-      result.innerHTML = `
-        <img src="${data.image}" 
-             style="max-width:100%; border-radius:12px; margin-top:10px;" />
-      `;
-    } else {
-      result.innerText = "Image generation failed.";
-    }
-  } catch (error) {
-    result.innerText = "Error generating image.";
-  }
-}
-  async function generateScript() {
-    const prompt = document.getElementById("prompt").value;
-    const result = document.getElementById("result");
+      try {
+        const response = await fetch("/.netlify/functions/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
 
-    if (!prompt) {
-      result.innerText = "Please enter an idea first.";
-      return;
+        const data = await response.json();
+        result.innerText = data.result || "No response from AI.";
+      } catch (err) {
+        result.innerText = "Error generating script.";
+      }
     }
 
-    result.innerText = "✨ AI is thinking...";
+    async function generateImage() {
+      const prompt = document.getElementById("prompt").value;
+      const result = document.getElementById("result");
 
-    try {
-  const response = await fetch("/.netlify/functions/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ prompt })
-  });
+      if (!prompt) {
+        result.innerText = "Please enter an idea first.";
+        return;
+      }
 
-  const data = await response.json();
+      result.innerText = "🎨 Generating image...";
 
-  if (data.result) {
-    result.innerText = data.result;
-  } else {
-    result.innerText = "✨ AI is thinking...";
-  }
-} catch (error) {
-  result.innerText = "Error connecting to AI.";
+      try {
+        const response = await fetch("/.netlify/functions/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await response.json();
+
+        if (data.image) {
+          result.innerHTML = `<img src="${data.image}" />`;
+        } else {
+          result.innerText = "Image generation failed.";
+        }
+      } catch (err) {
+        result.innerText = "Error generating image.";
+      }
     }
-  }
-</script>
+  </script>
+
 </body>
 </html>
