@@ -1,3 +1,5 @@
+import fetch from "node-fetch";
+
 export async function handler(event) {
   try {
     const { prompt } = JSON.parse(event.body);
@@ -27,10 +29,10 @@ export async function handler(event) {
 
     const data = await response.json();
 
-    if (!data.data || !data.data[0].url) {
+    if (!data?.data?.[0]?.url) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "Image not generated", raw: data })
+        body: JSON.stringify({ error: "Image generation failed", raw: data })
       };
     }
 
