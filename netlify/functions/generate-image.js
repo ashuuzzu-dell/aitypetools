@@ -1,11 +1,11 @@
 export async function handler(event) {
   try {
-    const { prompt } = JSON.parse(event.body || "{}");
+    const { prompt } = JSON.parse(event.body);
 
     if (!prompt) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "Prompt is required" }),
+        body: JSON.stringify({ error: "Prompt missing" }),
       };
     }
 
@@ -18,7 +18,7 @@ export async function handler(event) {
       body: JSON.stringify({
         model: "gpt-image-1",
         prompt: prompt,
-        size: "1024x1024"
+        size: "1024x1024",
       }),
     });
 
