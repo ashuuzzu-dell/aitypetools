@@ -78,7 +78,7 @@
 
   <textarea id="prompt" placeholder="Example: A suspense short film in a rainy city..."></textarea>
   <button onclick="generateScript()">Generate Script</button>
-
+  <button onclick="generateImage()">🎨 Generate Image</button>
   <div id="result" class="output"></div>
 </section>
 
@@ -87,6 +87,40 @@
 </footer>
 
 <script>
+  async function generateImage() {
+  const prompt = document.getElementById("prompt").value;
+  const result = document.getElementById("result");
+
+  if (!prompt) {
+    result.innerText = "Please enter an idea first.";
+    return;
+  }
+
+  result.innerHTML = "🎨 Generating image...";
+
+  try {
+    const response = await fetch("/.netlify/functions/generate-image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await response.json();
+
+    if (data.image) {
+      result.innerHTML = `
+        <img src="${data.image}" 
+             style="max-width:100%; border-radius:12px; margin-top:10px;" />
+      `;
+    } else {
+      result.innerText = "Image generation failed.";
+    }
+  } catch (error) {
+    result.innerText = "Error generating image.";
+  }
+}
   async function generateScript() {
     const prompt = document.getElementById("prompt").value;
     const result = document.getElementById("result");
